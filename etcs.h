@@ -1,7 +1,8 @@
 // Pin 13 has an LED connected on most Arduino boards.
 //int led = 13;
-int TEST = 4;           
-int DIRECTION = 5;      //which connect with direction relay
+int TEST = 4; 
+int DIRECTION = 0;//shit code          
+int SERVO = 5;      //which connect with direction relay
 int BUZZER = 6;
 int RELAY = 7;          //which connect to power relay
 

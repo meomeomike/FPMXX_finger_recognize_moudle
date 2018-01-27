@@ -2,7 +2,8 @@
 #include <SoftwareSerial.h>
 #include "./etcs.h"
 #include "./lcd.h"
-
+#include <Servo.h>
+Servo myservo;
 SoftwareSerial mySerial(3, 2);
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 
@@ -197,14 +198,17 @@ void KEY_Init()
 void FPMXX_Send_Cmd(unsigned char length,unsigned char *address,unsigned char returnLength) 
 { 
     unsigned char i = 0;
+   
     mySerial.flush();
    
-    for(i=0;i<6;i++) //包头{
+    for(i=0;i<6;i++) //包头
+    {
         mySerial.write(FPMXX_Pack_Head[i]);
     }
 	
-    for(i=0;i<length;i++){	        
-	    mySerial.write(*address);        
+    for(i=0;i<length;i++)
+    {	        
+	mySerial.write(*address);        
   	address++;
     }		
 	
@@ -328,6 +332,10 @@ void FPMXX_Cmd_StoreTemplate(unsigned int ID)
   mySerial.write(FPMXX_Save_Finger,9);  
   
  FPMXX_Cmd_Receive_Data(12);
+
+
+
+
 }
 
 
@@ -467,29 +475,32 @@ RETURN_MENU:
 /*自己写的开门程序*******************************************************************************************/
 void Iopen()
 {
-    digitalWrite(RELAY, HIGH);
-    delay(100);
-    while(1){
-        if(digitalRead(TEST)==HIGH){
-            delay(200);
-            digitalWrite(RELAY, LOW);
-            break;
-        }
-    }
-    digitalWrite(DIRECTION,HIGH);
-    
-    delay(2000);
-    digitalWrite(RELAY, HIGH);
-    delay(50);
-    while(1){
-        if(digitalRead(TEST)==HIGH){
-            
-            digitalWrite(DIRECTION,LOW);
-            delay(40);
-            digitalWrite(RELAY,LOW);
-            break;
-        }
-    }
+//    digitalWrite(RELAY, HIGH);
+//    delay(70);
+//    while(1){
+//        if(digitalRead(TEST)==HIGH){
+//            delay(150);
+//            digitalWrite(RELAY, LOW);
+//            break;
+//        }
+//    }
+//    
+//    delay(2000);
+//    digitalWrite(DIRECTION,HIGH);
+//    
+//    digitalWrite(RELAY, HIGH);
+//    delay(40);
+//    while(1){
+//        if(digitalRead(TEST)==HIGH){
+//            digitalWrite(DIRECTION,LOW);
+//            delay(5);
+//            digitalWrite(RELAY,LOW);
+//            break;
+//        }
+//    }
+  myservo.write(80); 
+    delay(1500);
+  myservo.write(180); 
 }
 /**********************************************************************************************/
 void FPMXX_Find_Fingerprint()
@@ -563,11 +574,11 @@ void FPMXX_Find_Fingerprint()
 void setup()
 {
     tone(BUZZER,440,80);
-    LED_Init();
-    RELAY_Init();
+    //LED_Init();
+    //RELAY_Init();
     KEY_Init();
 
-    testDIRECTION();
+    //testDIRECTION();
 
     LCD_Pins_Init();
     LCD_Init();
@@ -576,8 +587,8 @@ void setup()
 
     mySerial.begin(57600);
     Serial.begin(9600);
-    
-    
+    myservo.attach(SERVO);
+    myservo.write(180); 
     delay(1000);
     
 }
@@ -591,6 +602,7 @@ void loop()
       delay(300);
     }*/
     int key_status = 100;
+    FPMXX_Find_Fingerprint();
     while (1){
         //BUTTON_DOWN
         key_status = digitalRead(KEY_DOWN);
